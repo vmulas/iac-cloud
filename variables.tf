@@ -14,10 +14,10 @@ variable "aws_region" {
   default     = "eu-west-1"
 }
 
-# ubuntu-trusty-14.04 (x64)
+# ubuntu-xenial-16.04 (x64)
 variable "aws_amis" {
   default = {
-    "eu-west-1" = "ami-8aa67cf9"
+    "eu-west-1" = "ami-98ecb7fe"
     "us-west-2" = "ami-7f675e4f"
   }
 }

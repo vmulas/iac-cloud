@@ -72,6 +72,50 @@ resource "aws_security_group" "default" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+### Swarm Security Group
+
+ ingress {
+    from_port   = 2377
+    to_port     = 2377
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+ ingress {
+    from_port   = 2376
+    to_port     = 2376
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 4789
+    to_port     = 4789
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 4789
+    to_port     = 4789
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
+ ingress {
+    from_port   = 7946
+    to_port     = 7946
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+ ingress {
+    from_port   = 7946
+    to_port     = 7946
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   # outbound internet access
   egress {
@@ -135,7 +179,7 @@ resource "aws_elb" "web" {
 
   # The instance is registered automatically
 
-  instances                   = ["${aws_instance.web.id}"]
+  instances                   = ["${aws_instance.web.*.id}"]
   cross_zone_load_balancing   = true
   idle_timeout                = 400
   connection_draining         = true
@@ -151,10 +195,10 @@ resource "aws_lb_cookie_stickiness_policy" "default" {
 
 resource "aws_instance" "web" {
   instance_type = "t2.micro"
-
   # Lookup the correct AMI based on the region
   # we specified
   ami = "${lookup(var.aws_amis, var.aws_region)}"
+  count = "2"
 
   # The name of our SSH keypair you've created and downloaded
   # from the AWS console.
@@ -171,6 +215,6 @@ resource "aws_instance" "web" {
   #Instance tags
 
   tags {
-    Name = "${var.stack_name}"
+    Name = "${var.stack_name}-${count.index}"
   }
 }

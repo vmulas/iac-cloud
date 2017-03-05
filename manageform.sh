@@ -19,6 +19,11 @@ echo "Manager: $manager"
 echo "manager_lan: $manager_lan"
 echo "Others: $others"
 echo "others_lan: $others_lan"
-sleep 120
+sleep 150
 cd ansible && \
 ansible --private-key=confman.pem -i $manager, -u ubuntu all -m raw -a "sudo docker swarm init --advertise-addr $manager_lan | grep token"
+swarm_token=$(ansible --private-key=confman.pem -i $manager, -u ubuntu all -m raw -a "sudo docker swarm join-token manager -q" | grep ^SWM) 
+#ansible --private-key=confman.pem -i $manager, -u ubuntu all -m raw -a "sudo docker swarm join-token manager -q"
+echo "Token: ${swarm_token}"
+
+ansible --private-key=confman.pem -i $others, -u ubuntu all -m raw -a "sudo docker swarm join --token ${swarm_token} ${manager_lan}:2377"
